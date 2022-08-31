@@ -1,5 +1,5 @@
 import api from "../api";
-//import { RefreshTokenResponse } from "./dtos/refreshTokenResponse.dto";
+import { RefreshTokenResponse } from "./dtos/refreshTokenResponse.dto";
 import { AuthResponseDto } from "./dtos/authResponse.dto";
 
 export interface LoginProps{
@@ -8,6 +8,8 @@ export interface LoginProps{
 }
 
 export const TOKEN_KEY = "@menteSa-Token";
+export const REFRESH_TOKEN = "@menteSa-RefreshTokem";
+export const USER_EMAIL = "@menteSa-UserEmail";
 
 export async function fetchUserLogin({email, password}:LoginProps): Promise<AuthResponseDto>{
     const url = 'auth/login'
@@ -16,6 +18,8 @@ export async function fetchUserLogin({email, password}:LoginProps): Promise<Auth
 
     if(status === 200){
         localStorage.setItem(TOKEN_KEY, JSON.stringify(data.token.accessToken))
+        localStorage.setItem(REFRESH_TOKEN, JSON.stringify(data.token.refreshToken))
+        localStorage.setItem(USER_EMAIL, JSON.stringify(data.user.email))
     }
     return data
 }
@@ -23,6 +27,8 @@ export async function fetchUserLogin({email, password}:LoginProps): Promise<Auth
 export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
+export const getRefreshToken = () => localStorage.getItem(REFRESH_TOKEN);
+export const getUserEmail = () => localStorage.getItem(USER_EMAIL);
 
 // export const login = (token:any) => {
 //   localStorage.setItem(TOKEN_KEY, token);
@@ -33,21 +39,18 @@ export const logout = () => {
 };
 
 
-// export async function fetchRefreshToken(email: string, refreshToken:string): Promise<RefreshTokenResponse>{
+export async function fetchRefreshToken(email: string, refreshToken:string): Promise<RefreshTokenResponse>{
 
-//     const url = 'auth/refresh-token'
+    const url = 'auth/refresh-token'
 
-//     const params = { email, refreshToken}
-//     const { data, status } = await api.post(url, params);
+    const payload = { email, refreshToken}
 
-//     if( status ===200){
-//         const newCredential = JSON.parse(localStorage.getItem("userLogin")|| "{}");
-//         newCredential.token.accessToken = data.accessToken
-//         newCredential.token.refreshToken = data.refreshToken
-//         newCredential.token.expiresIn = data.expiresIn
-//         localStorage.setItem(TOKEN_KEY, JSON.stringify(newCredential))
-//     }
+    const { data, status } = await api.post(url, payload);
 
-//     return data
-// }
+    if( status === 200){
+        localStorage.setItem(TOKEN_KEY, JSON.stringify(data.accessToken))
+        localStorage.setItem(REFRESH_TOKEN, JSON.stringify(data.refreshToken))
+    }
+    return data
+}
 

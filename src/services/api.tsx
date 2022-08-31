@@ -1,7 +1,5 @@
 import axios from "axios";
-import { getToken } from "./Auth/service";
-
-// import { fetchRefreshToken } from "./Auth/service";
+import { fetchRefreshToken, getToken, getRefreshToken, getUserEmail } from "./Auth/service";
 
 const api = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL
@@ -11,26 +9,31 @@ const api = axios.create({
 api.interceptors.request.use(async config => {
     const token = getToken();
     if (token) {
-      config.headers!.Authorization = `Bearer ${token}`;
+      config.headers!.Authorization = `Bearer ${JSON.parse(token)}`;
     }
     return config;
   });
 
 
-// api.interceptors.response.use(
-//     (response) => {
-//       return response;
-//     },
-//     async function (error) {
-//       const access_token = JSON.parse(localStorage.getItem("userLogin")|| "{}");
-     
-//       if (error.response.status === 401 && access_token) {
-//         const response = await fetchRefreshToken(access_token.user.email, access_token.token.refreshToken);
-//         return response;
-//       }
-//       return Promise.reject(error);
-//     }
-//   );
+api.interceptors.response.use(
+    (response) => {
+      console.log(response)
+      debugger
+      return response;
+    },
+    async function (error) {
+      console.log(error)
+      debugger
+      const refresh_token = getRefreshToken();
+      const user_email = getUserEmail();
+      debugger
+      if (error.response.status === 401 && refresh_token && user_email) {
+        const response = await fetchRefreshToken(JSON.parse(user_email), JSON.parse(refresh_token));
+        return response;
+      }
+      return Promise.reject(error);
+    }
+  );
 
 
 
