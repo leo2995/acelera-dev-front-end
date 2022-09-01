@@ -17,16 +17,11 @@ api.interceptors.request.use(async config => {
 
 api.interceptors.response.use(
     (response) => {
-      console.log(response)
-      debugger
       return response;
     },
     async function (error) {
-      console.log(error)
-      debugger
       const refresh_token = getRefreshToken();
       const user_email = getUserEmail();
-      debugger
       if (error.response.status === 401 && refresh_token && user_email) {
         const response = await fetchRefreshToken(JSON.parse(user_email), JSON.parse(refresh_token));
         return response;

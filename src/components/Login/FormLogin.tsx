@@ -2,13 +2,21 @@ import { Button, Checkbox, Form, Input, message } from 'antd';
 
 import {useNavigate} from 'react-router-dom'
 import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchUserLogin } from 'src/services/Auth/service';
 
+import { usePatientList } from 'src/services/Patient/hooks';
 
-//import { LoginProps } from 'src/services/Auth/service';
 
 const FormLogin: React.FC = () => {
+
+
+
+ 
+  // Get QueryClient from the context
+  const queryClient = useQueryClient()
+  
+  
 const navigate = useNavigate();
 
 const [ email, setEmail] = useState('')
@@ -18,8 +26,6 @@ const [ password, setPassword] = useState('')
 const onFinish = (values: any) => {
   setEmail(values.username)
   setPassword(values.password)
-  debugger
-
   if(email !=='' && password !==''){
     mutate()
   }
@@ -33,7 +39,8 @@ const onFinish = (values: any) => {
       }),
     {
       onSuccess: () => {
-        message.success('Logado com Sucesso')
+        message.success('Paciente criado com sucesso!')
+        //queryClient.invalidateQueries('patientList')
         navigate('/dashboard')
       },
       onError:(msg)=>{
