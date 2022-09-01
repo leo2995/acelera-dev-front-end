@@ -40,7 +40,7 @@ const onFinish = (values: any) => {
     {
       onSuccess: () => {
         message.success('Paciente criado com sucesso!')
-        //queryClient.invalidateQueries('patientList')
+        queryClient.invalidateQueries(['patientList'])
         navigate('/dashboard')
       },
       onError:(msg)=>{
